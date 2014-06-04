@@ -101,7 +101,7 @@ class Hicpo
 		
 		if ( !empty( $objects ) ) {
 			foreach( $objects as $object) {
-				$results = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future') ORDER BY post_date DESC" );
+				$results = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future', 'inherit') ORDER BY post_date DESC" );
 				foreach( $results as $key => $result ) {
 					$wpdb->update( $wpdb->posts, array( 'menu_order' => $key+1 ), array( 'ID' => $result->ID ) );
 				}
@@ -177,12 +177,12 @@ class Hicpo
 				menu_order の max とレコード数が一致して、かつ min が 0 じゃない時は再構築処理をスキップする
 				*/
 				
-				$result = $wpdb->get_results( "SELECT count(*) as cnt, max(menu_order) as max, min(menu_order) as min FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future')" );
+				$result = $wpdb->get_results( "SELECT count(*) as cnt, max(menu_order) as max, min(menu_order) as min FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future','inherit')" );
 				if ( count( $result ) > 0 && $result[0]->cnt == $result[0]->max && $result[0]->min != 0 ) {
 					continue;
 				}
 				
-				$results = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future') ORDER BY menu_order ASC" );
+				$results = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = '".$object."' AND post_status IN ('publish', 'pending', 'draft', 'private', 'future','inherit') ORDER BY menu_order ASC" );
 				
 				foreach( $results as $key => $result ) {
 					// 新規追加した場合 menu_order=0 で登録されるため、常に1からはじまるように振っておく
